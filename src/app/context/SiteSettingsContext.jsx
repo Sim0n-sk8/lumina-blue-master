@@ -267,7 +267,6 @@ export function SiteSettingsProvider({ children, initialPracticeId, customerCode
             titleGoogleFont: banner.banner_title_google_font,
             textGoogleFont: banner.banner_text_google_font,
             bannerImg: banner.img,
-            // {bannerimg}
             buttonText: banner.button_text,
             buttonLink: banner.button_link
           })) || [],
