@@ -51,7 +51,7 @@ function LayoutContent({ children }) {
         <meta property="twitter:title" content={isLoading ? "Loading..." : title} />
         <meta property="twitter:description" content="Your website description" />
         {ogImage && <meta property="twitter:image" content={ogImage} />}
-      
+      </Head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen w-full`}>
         <main className="flex-grow w-full relative">
           {children}
