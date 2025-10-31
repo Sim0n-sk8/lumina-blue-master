@@ -36,10 +36,11 @@ function LayoutContent({ children }) {
   { !isLoading && siteSettings && (
     <>
       <title>{title}</title>
+      <link rel="canonical" href="https://lumina-blue-master.vercel.app/67" />
       <meta name="description" content={siteSettings.description} />
       <meta property="og:title" content={title} />
       <meta property="og:description" content={siteSettings.description} />
-      <meta property="og:url" content={`https://lumina-blue-master.vercel.app/${siteSettings.slug}`} />
+      <meta property="og:url" content="https://lumina-blue-master.vercel.app/67" />
       <meta property="og:type" content="website" />
       {siteSettings.banners[0]?.bannerImg && (
         <meta property="og:image" content={siteSettings.banners[0].bannerImg} />
