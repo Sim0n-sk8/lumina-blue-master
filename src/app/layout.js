@@ -49,7 +49,9 @@ function LayoutContent({ children }) {
         <meta property="og:description" content="Short description of the page" />
         <meta property="og:url" content="https://lumina-blue-master.vercel.app/67" />
         <meta property="og:type" content="website" /> 
-        <meta property="og:image" content={siteSettings?.banners?.[0]?.bannerImg} />
+       {siteSettings?.banners?.[0]?.bannerImg && (
+    <meta property="og:image" content={siteSettings.banners[0].bannerImg} />
+  )}
         <meta property="og:image:type" content="image/png" />
         <meta property="og:image:width" content="1920" />
         <meta property="og:image:height" content="600" />
