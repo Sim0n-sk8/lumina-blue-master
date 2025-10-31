@@ -33,34 +33,25 @@ function LayoutContent({ children }) {
   return (
     <html lang="en">
       <Head>
-        <title>{isLoading ? "Loading..." : title}</title>
-        <meta name="description" content="Short description of the page (155-160 chars)" />
-        <meta name="keywords" content="keyword1, keyword2, keyword3" />
-        
-        <meta name="robots" content="index, follow" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta charset="UTF-8" />
-
-
-
-        {/* Open Graph Meta Tags */}
-
-        <meta property="og:title" content="Page Title" />
-        <meta property="og:description" content="Short description of the page" />
-        <meta property="og:url" content="https://lumina-blue-master.vercel.app/67" />
-        <meta property="og:type" content="website" /> 
-       {siteSettings?.banners?.[0]?.bannerImg && (
-    <meta property="og:image" content="{{siteSettings.banners[0].bannerImg}}" />
+  { !isLoading && siteSettings && (
+    <>
+      <title>{title}</title>
+      <meta name="description" content={siteSettings.description} />
+      <meta property="og:title" content={title} />
+      <meta property="og:description" content={siteSettings.description} />
+      <meta property="og:url" content={`https://lumina-blue-master.vercel.app/${siteSettings.slug}`} />
+      <meta property="og:type" content="website" />
+      {siteSettings.banners[0]?.bannerImg && (
+        <meta property="og:image" content={siteSettings.banners[0].bannerImg} />
+      )}
+      <meta property="og:image:type" content="image/png" />
+      <meta property="og:image:width" content="1920" />
+      <meta property="og:image:height" content="600" />
+      <meta property="og:site_name" content={siteSettings.name} />
+    </>
   )}
-        <meta property="og:image:type" content="image/png" />
-        <meta property="og:image:width" content="1920" />
-        <meta property="og:image:height" content="600" />
-    
-        
+</Head>
 
-
-        
-      </Head>
       
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen w-full`}>
         <main className="flex-grow w-full relative">
