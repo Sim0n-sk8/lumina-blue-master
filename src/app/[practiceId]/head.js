@@ -20,7 +20,7 @@ export default async function Head({ params }) {
 
       {/* Open Graph */}
       <meta property="og:url" content={`https://lumina-blue-master.vercel.app/${practiceID}`} />
-      <meta property="og:title" content={title} />
+      <meta property="og:title" content="this is a test" />
       <meta property="og:description" content={description} />
       {banner?.bannerImg && <meta property="og:image" content={banner.bannerImg} />}
     </>
