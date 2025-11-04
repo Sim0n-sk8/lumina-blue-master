@@ -34,7 +34,7 @@ export async function getSiteSettings(customerCodeOrPracticeId) {
     const short_name = practiceData?.short_name || websiteData?.practice_name || "Lumina Blue";
     const aboutText = websiteData?.about?.body || "";
    
-    const banners = websiteData?.banners || [];
+    const banners = websiteData?.banners.bannerImg || [];
 
     return {
       name,
