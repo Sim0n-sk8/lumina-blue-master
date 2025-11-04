@@ -19,6 +19,8 @@ export default async function CustomerLayout({ children, params }) {
         <meta property="og:title" content={siteName} />
         <meta property="og:description" content={description} />
         <meta property="og:image" content={ogImage} />
+        <meta property="og:image:width" content="1920" />
+        <meta property="og:image:height" content="600" />
         <meta property="og:type" content="website" />
       
       
