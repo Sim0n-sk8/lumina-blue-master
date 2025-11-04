@@ -7,7 +7,11 @@ export default async function CustomerLayout({ children, params }) {
   const siteName = siteSettings?.name || "Lumina Blue";
   const description =
     siteSettings?.aboutText || `${siteName} - Eye care services in ${siteSettings?.city || "your area"}`;
-  const ogImageRaw = siteSettings?.banners[0]?.img || "/default-banner.jpg";
+  const ogImageRaw =
+  siteSettings?.banners?.length > 0
+    ? siteSettings.banners[0].img
+    : "/default-banner.jpg";
+
   const ogImage = ogImageRaw
     ? ogImageRaw
     : `default-placeholder.jpg`;
