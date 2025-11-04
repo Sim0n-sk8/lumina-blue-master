@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect } from "react";
@@ -40,9 +39,16 @@ export function DynamicMetaUpdater() {
                        `${siteName} - Eye care services in ${siteSettings.city || 'your area'}`;
 
     // Get the first banner image or a default
+    // Check multiple possible locations for banner images
     const ogImage = siteSettings.banners?.[0]?.bannerImg || 
+                   siteSettings.banners?.[0]?.img ||
                    siteSettings.about?.image || 
+                   siteSettings.about?.img ||
+                   siteSettings.brands?.[0]?.img ||
                    "/default-banner.jpg";
+    
+    console.log("Available banners:", siteSettings.banners);
+    console.log("Selected OG image:", ogImage);
 
     // Update meta tags
     setMeta("name", "description", description);
