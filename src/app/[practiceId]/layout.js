@@ -5,7 +5,7 @@ export default async function CustomerLayout({ children, params }) {
   const siteSettings = await getSiteSettings(params.practiceId);
 
   const siteName = siteSettings?.practiceName || "Lumina Blue";
-  const description = siteSettings?.aboutText || `${siteName} - Eye care services in ${siteSettings?.city || "your area"}`;
+  const description = siteSettings?.aboutText ;
 
   const ogImage = siteSettings?.bannerImage
   ? siteSettings.bannerImage
