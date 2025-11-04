@@ -5,16 +5,11 @@ export default async function CustomerLayout({ children, params }) {
   const siteSettings = await getSiteSettings(params.practiceId);
 
   const siteName = siteSettings?.practiceName || "Lumina Blue";
-  const description =
-    siteSettings?.aboutText || `${siteName} - Eye care services in ${siteSettings?.city || "your area"}`;
-  const ogImageRaw =
-  siteSettings?.bannerImage?.length > 0
-    ? siteSettings.bannerImage[0].img
-    : "/default-banner.jpg";
+  const description = siteSettings?.aboutText || `${siteName} - Eye care services in ${siteSettings?.city || "your area"}`;
 
-  const ogImage = ogImageRaw
-    ? ogImageRaw
-    : `default-placeholder.jpg`;
+  const ogImage = siteSettings?.bannerImage
+  ? siteSettings.bannerImage
+  : "/default-banner.jpg";
 
   return (
     <>
