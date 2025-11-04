@@ -20,27 +20,32 @@ export async function getSiteSettings(customerCodeOrPracticeId) {
   const headers = { Authorization: `Bearer ${apiKey}` };
 
   try {
-    const [practiceRes, websiteRes] = await Promise.all([
+    const [siteSettings] = await Promise.all([
       fetch(`https://passport.nevadacloud.com/api/v1/public/practices/${practiceId}`),
+    ]);
+
+    const [siteSettings2] = await Promise.all([
       fetch(`https://www.eyecareportal.com/api/website/${practiceId}/0`, { headers }),
     ]);
 
-    if (!practiceRes.ok || !websiteRes.ok) return null;
+    if (!siteSettings.ok || !siteSettings2.ok) return null;
 
-    const [practiceData, websiteData] = await Promise.all([practiceRes.json(), websiteRes.json()]);
+    const [practiceData] = await Promise.all([siteSettings.json()]);
+
+    const [websiteData] = await Promise.all([siteSettings2.json()]);
 
     // Build the minimal settings for meta tags
-    const name = practiceData?.name || websiteData?.practice_name || "Lumina Blue";
-    const short_name = practiceData?.short_name || websiteData?.practice_name || "Lumina Blue";
+    const practiceName = practiceData?.name || websiteData?.practice_name || "Lumina Blue";
+    const shortName = practiceData?.short_name || websiteData?.practice_name || "Lumina Blue";
     const aboutText = websiteData?.about?.body || "";
    
-    const banners = websiteData?.banners[0].bannerImg || [];
+    const bannerImage = websiteData?.banners[0].img || [];
 
     return {
-      name,
-      short_name,
+      practiceName,
+      shortName,
       aboutText,
-      banners,
+      bannerImage,
     };
   } catch (err) {
     console.error("Error fetching server-side site settings:", err);
