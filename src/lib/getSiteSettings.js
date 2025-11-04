@@ -33,20 +33,13 @@ export async function getSiteSettings(customerCodeOrPracticeId) {
     const name = practiceData?.name || websiteData?.practice_name || "Lumina Blue";
     const short_name = practiceData?.short_name || websiteData?.practice_name || "Lumina Blue";
     const aboutText = websiteData?.about?.body || "";
-    const city = practiceData?.city || "";
-    const address_1 = practiceData?.address_1 || "";
-    const state = practiceData?.state || "";
-    const zip = practiceData?.zip || "";
+   
     const banners = websiteData?.banners || [];
 
     return {
       name,
       short_name,
       aboutText,
-      city,
-      address_1,
-      state,
-      zip,
       banners,
     };
   } catch (err) {
