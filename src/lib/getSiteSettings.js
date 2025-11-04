@@ -37,7 +37,9 @@ export async function getSiteSettings(customerCodeOrPracticeId) {
     // Build the minimal settings for meta tags
     const practiceName = practiceData?.name || websiteData?.practice_name || "Lumina Blue";
     const shortName = practiceData?.short_name || websiteData?.practice_name || "Lumina Blue";
-    const aboutText = websiteData?.about?.body || "";
+    const aboutTextRaw = websiteData?.about?.body || "";
+    const aboutText = aboutTextRaw.replace(/<[^>]*>/g, "").trim();
+
    
     const bannerImage = websiteData?.banners[0].img || [];
 
