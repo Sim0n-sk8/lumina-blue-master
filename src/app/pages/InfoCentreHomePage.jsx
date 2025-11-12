@@ -163,7 +163,7 @@ const InfoCentreHomePage = ({ clean = false }) => {
         <div className="max-w-7xl mx-auto space-y-20">
           {categories.map((category, index) => {
             return (
-              <div key={category.id} className="w-full p-6 bg-white rounded-lg border border-gray-200 shadow-lg transition-transform duration-300 ease-in-out transform hover:scale-105 hover:shadow-xl">
+              <div key={category.id} className="w-full p-6 bg-white rounded-lg border border-gray-200 shadow-md transition-all duration-200 ease-in-out transform hover:scale-[1.02] hover:shadow-lg">
                 <div className="w-full flex flex-col md:flex-row items-center">
                   {/* Image Section - Order changes based on index */}
                   <div className={`w-full md:w-1/2 ${index % 2 !== 0 ? 'md:order-2' : ''} p-4`}>
@@ -178,7 +178,7 @@ const InfoCentreHomePage = ({ clean = false }) => {
                             src={category.thumbnailImgUrl || FALLBACK_IMAGE}
                             alt={category.name}
                             layout="fill"
-                            className="object-cover transition-transform duration-300 transform hover:scale-110"
+                            className="object-cover transition-transform duration-200 transform hover:scale-102"
                             priority
                             onError={(e) => {
                               // Prevent infinite loop by setting a flag
@@ -203,7 +203,7 @@ const InfoCentreHomePage = ({ clean = false }) => {
                     <p className="text-gray-600 mb-6 text-lg leading-relaxed line-clamp-2">
                       {getCategoryDescription(category.name)}
                     </p>
-                    <span className={`inline-block px-6 py-3 text-base rounded-full shadow-md transition-transform transform hover:scale-105 ${
+                    <span className={`inline-block px-6 py-3 text-base rounded-full shadow-sm transition-all duration-200 transform hover:scale-103 ${
                       clean 
                         ? 'bg-black text-white hover:bg-gray-800' 
                         : 'bg-primary text-white hover:bg-opacity-90'

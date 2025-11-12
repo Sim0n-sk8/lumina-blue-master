@@ -107,7 +107,7 @@ export default function SubcategoryPage() {
           
           setContent({
             id: item.id,
-            name: item.name,
+            name: item.title,
             banner: bannerUrl,
             overview: overviewAttr?.data || '',
             hasOverview: !!overviewAttr,

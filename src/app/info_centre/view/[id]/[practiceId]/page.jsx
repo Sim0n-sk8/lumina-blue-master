@@ -5,13 +5,15 @@ import { useParams, useRouter } from 'next/navigation';
 import axios from 'axios';
 import Image from 'next/image';
 import Link from 'next/link';
+import SinglePageNavbar from '../../../../components/SinglePageNavbar';
 import Navbar from '../../../../pages/Navbar';
 import FooterPage from '../../../../pages/FooterPage';
 import { SiteSettingsProvider, useSiteSettings } from '../../../../context/SiteSettingsContext';
+import { isLuminaPractice, getPracticeSettings, getPracticeLogo } from '../../../../../utils/practiceUtils';
 import styles from '../../../../../app/[practiceId]/info_centre/view/[itemId]/infoItem.module.css';
 
 // Default practice ID to use when none is provided in the URL
-const DEFAULT_PRACTICE_ID = '1';
+const DEFAULT_PRACTICE_ID = '67';
 
 function SubcategoryPageContent() {
   const params = useParams();
@@ -23,6 +25,8 @@ function SubcategoryPageContent() {
   const [categoryDetails, setCategoryDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [practiceLogo, setPracticeLogo] = useState(null);
+  const [hasLuminaSite, setHasLuminaSite] = useState(false);
 
   useEffect(() => {
     if (itemId) {
@@ -30,6 +34,32 @@ function SubcategoryPageContent() {
         try {
           setLoading(true);
           setError(null);
+          
+          // Check if this practice has a Lumina Blue site
+          try {
+            const response = await fetch(`https://www.eyecareportal.com/api/website/${practiceId}/0`);
+            if (response.ok) {
+              const data = await response.json();
+              // If the response has data, it means this practice has a Lumina Blue site
+              setHasLuminaSite(data && Object.keys(data).length > 0);
+            }
+          } catch (error) {
+            console.error('Error checking Lumina site status:', error);
+            // Default to false if there's an error
+            setHasLuminaSite(false);
+          }
+          
+          // Check if this is a Lumina practice
+          const isLumina = await isLuminaPractice(practiceId);
+          
+          // If not a Lumina practice, fetch practice settings to get the logo
+          if (!isLumina) {
+            const settings = await getPracticeSettings(practiceId);
+            const logoUrl = getPracticeLogo(settings);
+            if (logoUrl) {
+              setPracticeLogo(logoUrl);
+            }
+          }
 
           if (!itemId) {
             throw new Error('No item ID specified in the URL');
@@ -108,7 +138,7 @@ function SubcategoryPageContent() {
           
           setContent({
             id: item.id,
-            name: item.name,
+            name: item.title,
             banner: bannerUrl,
             overview: overviewAttr?.data || '',
             hasOverview: !!overviewAttr,
@@ -178,7 +208,7 @@ function SubcategoryPageContent() {
   const renderContent = () => {
     if (loading) {
       return (
-        <div className="fixed inset-0 bg-gray-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-gray-100 flex items-center justify-center z-50">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
             <p className="text-gray-700 text-lg">Loading...</p>
@@ -228,7 +258,7 @@ function SubcategoryPageContent() {
         ) : (
           content.attributes
             .filter(attr => attr.name.includes('.') && 
-                          !attr.name.startsWith('Reference.') && 
+                          !attr.name.startsWith('Reference.') &&
                           !['bannerImg', 'Overview'].includes(attr.name))
             .sort((a, b) => {
               const getSectionNumber = (name) => {
@@ -297,8 +327,10 @@ function SubcategoryPageContent() {
   const renderBreadcrumbs = () => {
     if (!content) return null;
     
-    const infoCentrePath = practiceId ? `/${practiceId}/info_centre` : '/info_centre';
-    const categoryPath = categoryDetails ? `${infoCentrePath}/list/${categoryDetails.id}` : infoCentrePath;
+    // For /info_centre/view/[id]/[practiceId] route, always use /info_centre/[practiceId] for the Info Centre link
+    const infoCentrePath = practiceId ? `/info_centre/${practiceId}` : '/info_centre';
+    // Include practiceId in the category path
+    const categoryPath = categoryDetails ? `${infoCentrePath}/list/${categoryDetails.id}${practiceId ? `/${practiceId}` : ''}` : infoCentrePath;
     
     return (
       <div className="bg-gray-100 py-5 pb-1 px-4">
@@ -326,13 +358,17 @@ function SubcategoryPageContent() {
   };
 
   return (
-    <div className={styles.mainContent}>
-      <Navbar practiceId={practiceId} />
+    <div className="min-h-screen flex flex-col bg-gray-100">
+      {hasLuminaSite ? (
+        <Navbar practiceLogo={practiceLogo} practiceId={practiceId} />
+      ) : (
+        <SinglePageNavbar practiceLogo={practiceLogo} practiceId={practiceId} />
+      )}
       
       {/* Keep the original banner section */}
       {content?.banner && (
           <div 
-            className="w-full h-[600px] bg-cover bg-center text-center text-white relative"
+            className="w-full h-[600px] bg-cover bg-center text-center text-white relative bg-gray-100"
             style={{ backgroundImage: content.banner ? `url(${content.banner})` : 'none' }}
           >
             <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
@@ -348,7 +384,7 @@ function SubcategoryPageContent() {
         style={{
           '--primary-color': siteSettings?.primaryColor || 'black',
           borderColor: siteSettings?.primaryColor || 'black',
-          marginTop: '1.5rem' // Add some space between breadcrumb and content
+          marginTop: '1.5rem'
         }}
       >
         {!content?.banner && content?.name && (
@@ -357,7 +393,7 @@ function SubcategoryPageContent() {
         {renderContent()}
       </main>
 
-      <FooterPage />
+      <FooterPage practiceLogo={practiceLogo} practiceId={practiceId}/>
 
     </div>
   );
@@ -365,7 +401,6 @@ function SubcategoryPageContent() {
 
 // Client component that handles the params Promise
 function SubcategoryPageClient({ params }) {
-  // Use React.use() to properly unwrap the params Promise
   const unwrappedParams = React.use(params);
   const { id: itemId, practiceId } = unwrappedParams || {};
   const effectivePracticeId = practiceId || DEFAULT_PRACTICE_ID;

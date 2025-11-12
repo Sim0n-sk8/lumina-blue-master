@@ -18,7 +18,6 @@ export default function ViewMailLink({ params }) {
   const [mailData, setMailData] = useState(null);
   const [appointment, setAppointment] = useState(null);
   const [primaryColor, setPrimaryColor] = useState('#3b82f6'); // Default blue color
-  const [practiceSettings, setPracticeSettings] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -74,19 +73,18 @@ export default function ViewMailLink({ params }) {
         
         setMailData(processedMailData);
         
-        // Fetch practice settings
+        // Fetch practice settings to get primary color
         try {
           const practiceResponse = await fetch(`/api/practice-settings?practice_id=${practiceData.id}`);
           if (practiceResponse.ok) {
-            const settings = await practiceResponse.json();
-            setPracticeSettings(settings);
-            if (settings.primary_color) {
-              setPrimaryColor(settings.primary_color);
+            const practiceSettings = await practiceResponse.json();
+            if (practiceSettings.primary_color) {
+              setPrimaryColor(practiceSettings.primary_color);
             }
           }
         } catch (err) {
           console.error('Error fetching practice settings:', err);
-          // Continue with default settings if there's an error
+          // Continue with default color if there's an error
         }
         
         // Fetch appointment data
@@ -368,11 +366,7 @@ export default function ViewMailLink({ params }) {
 
   return (
     <div className="flex flex-col bg-gray-50 min-h-screen">
-      <Navbar 
-        practiceId={mailData?.practice_id} 
-        logoLight={practiceSettings?.about?.logo_light}
-        logoDark={practiceSettings?.about?.logo_dark}
-      />
+      <Navbar practiceId={practice.id} />
       {/* Hero Section */}
       <div className="w-full h-[500px] bg-[url('https://www.imageeyecareoptometrists.com/assets/info_centre_banner-4940284541b3ff321b2a3d735fc5ef1caa0f4c66de9804905118656edf31c88d.jpg')] bg-cover bg-center text-white">
         <div className="h-full bg-black bg-opacity-50 flex items-center justify-center">
@@ -386,11 +380,7 @@ export default function ViewMailLink({ params }) {
           />
         </div>
       </div>
-      <FooterPage
-        tel={practiceSettings?.tel || practiceSettings?.whatsapp_tel}
-        email={practiceSettings?.email}
-        address={`${practiceSettings?.address_1 || ''} ${practiceSettings?.city || ''} ${practiceSettings?.country || ''}`.trim()}
-      />
+      <FooterPage />
     </div>
   );
 }

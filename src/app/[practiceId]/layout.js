@@ -22,8 +22,8 @@ export default async function CustomerLayout({ children, params }) {
         <meta property="og:image:width" content="1920" />
         <meta property="og:image:height" content="600" />
         <meta property="og:type" content="website" />
-      
-      
+
+
       </head>
 
       {children}

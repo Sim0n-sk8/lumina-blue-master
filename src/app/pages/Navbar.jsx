@@ -6,13 +6,39 @@ import Link from "next/link";
 import { useSiteSettings } from "../context/SiteSettingsContext";
 import { usePathname } from "next/navigation";
 
-const Navbar = () => {
+const Navbar = ({ practiceLogo }) => {
   const [isSticky, setIsSticky] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [licenseType, setLicenseType] = useState(null); // NEW
+  const [licenseType, setLicenseType] = useState(null);
+  const [hideLogo, setHideLogo] = useState(false);
   const { siteSettings } = useSiteSettings();
   const pathname = usePathname();
+
+  // Check if we should hide the logo
+  useEffect(() => {
+    async function checkLogoSetting() {
+      if (!siteSettings?.practiceId) return;
+      
+      try {
+        const response = await fetch(
+          `https://www.ocumail.com/api/settings?setting_object_id=${siteSettings.practiceId}&setting_object_type=Practice`
+        );
+        
+        if (response.ok) {
+          const settings = await response.json();
+          const logoSetting = settings.find(s => s.setting_name === 'HidePracticeLogoOnEyecarePortal');
+          if (logoSetting) {
+            setHideLogo(logoSetting.setting_value === 't');
+          }
+        }
+      } catch (error) {
+        console.error('Error checking logo visibility setting:', error);
+      }
+    }
+
+    checkLogoSetting();
+  }, [siteSettings?.practiceId]);
 
   // Fetch license info with better error handling
   useEffect(() => {
@@ -104,6 +130,12 @@ const handleMenuToggle = () => {
     const currentPath = pathname || '';
     const pathSegments = currentPath.split('/').filter(Boolean);
     
+    // Special handling for Info Centre link when in /info_centre/view/[id]/[practiceId] route
+    if (path === '/info_centre' && pathSegments[0] === 'info_centre' && pathSegments[1] === 'view' && pathSegments[3]) {
+      const practiceId = pathSegments[3];
+      return `/info_centre/${practiceId}`;
+    }
+    
     // Check if we're in a customer code route (first segment is not a number)
     const isCustomerCodeRoute = pathSegments[0] && !/^\d+$/.test(pathSegments[0]);
     
@@ -137,28 +169,31 @@ const handleMenuToggle = () => {
       style={textHoverStyle}
     >
       <div className="flex items-center justify-between w-full">
-        {/* Logo */}
-        <Link href={getLink("/")} className="flex-shrink-0">
-        <Image
-          src={
-            isSticky || isMenuOpen
-              ? siteSettings?.logo_dark || 
-                siteSettings?.about?.logo_dark || 
-                "https://s3.eu-west-2.amazonaws.com/ocumailuserdata/1689179837_67_logo_dark_wide.png"
-              : siteSettings?.logo_light || 
-                siteSettings?.about?.logo_light || 
-                "https://s3.eu-west-2.amazonaws.com/ocumailuserdata/1689179856_67_logo_light_wide.png"
-          }
-          alt={siteSettings?.name || 'Practice Logo'}
-          width={160}
-          height={45}
-          className="h-auto max-h-12 w-auto"
-          priority
-          onError={(e) => {
-            e.target.src = "https://via.placeholder.com/160x45?text=Logo+Not+Found";
-          }}
-        />
-        </Link>
+        {/* Logo */}        
+        <div className={hideLogo ? "invisible" : ""}>
+          <Link href={getLink("/")} className="flex-shrink-0">
+            <Image
+              src={
+                practiceLogo ||
+                (isSticky || isMenuOpen
+                  ? siteSettings?.logo_dark || 
+                    siteSettings?.about?.logo_dark || 
+                    "https://s3.eu-west-2.amazonaws.com/ocumailuserdata/1689179837_67_logo_dark_wide.png"
+                  : siteSettings?.logo_light || 
+                    siteSettings?.about?.logo_light || 
+                    "https://s3.eu-west-2.amazonaws.com/ocumailuserdata/1689179856_67_logo_light_wide.png")
+              }
+              alt={siteSettings?.name || 'Practice Logo'}
+              width={160}
+              height={45}
+              className="h-auto max-h-12 w-auto"
+              priority
+              onError={(e) => {
+                e.target.src = "https://via.placeholder.com/160x45?text=Logo+Not+Found";
+              }}
+            />
+          </Link>
+        </div>
 
         {/* Desktop Navigation */}
 <nav className="hidden navfix1:flex items-center font-medium ml-2 sm:ml-4 md:ml-6 lg:ml-8">

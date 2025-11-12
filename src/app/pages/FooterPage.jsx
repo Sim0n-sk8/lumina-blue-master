@@ -6,10 +6,36 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 
-const FooterPage = () => {
+const FooterPage = ({ practiceLogo }) => {
   const { siteSettings } = useSiteSettings();
   const [blogs, setBlogs] = useState([]);
   const [licenseType, setLicenseType] = useState(null);
+  const [hideLogo, setHideLogo] = useState(false);
+
+  // Check if we should hide the logo
+  useEffect(() => {
+    async function checkLogoSetting() {
+      if (!siteSettings?.practiceId) return;
+      
+      try {
+        const response = await fetch(
+          `https://www.ocumail.com/api/settings?setting_object_id=${siteSettings.practiceId}&setting_object_type=Practice`
+        );
+        
+        if (response.ok) {
+          const settings = await response.json();
+          const logoSetting = settings.find(s => s.setting_name === 'HidePracticeLogoOnEyecarePortal');
+          if (logoSetting) {
+            setHideLogo(logoSetting.setting_value === 't');
+          }
+        }
+      } catch (error) {
+        console.error('Error checking logo visibility setting:', error);
+      }
+    }
+
+    checkLogoSetting();
+  }, [siteSettings?.practiceId]);
 
   // Fetch license info with better error handling
   useEffect(() => {
@@ -147,9 +173,9 @@ const FooterPage = () => {
           {/* Column 1: Logo with text */}
           <div className="lg:col-span-3 space-y-4">
             <div className="flex items-center">
-              {siteSettings?.about?.logo_light ? (
+              {!hideLogo && (practiceLogo || siteSettings?.about?.logo_light) ? (
                 <Image 
-                  src={siteSettings.about.logo_light} 
+                  src={practiceLogo || siteSettings.about.logo_light} 
                   alt={siteSettings?.name || 'Practice Logo'} 
                   width={200}
                   height={50}
@@ -157,13 +183,20 @@ const FooterPage = () => {
                   onError={(e) => {
                     // Hide the image if it fails to load
                     e.target.style.display = 'none';
+                    // Show fallback text if both logos fail to load
+                    if (!hideLogo) {
+                      const fallbackDiv = document.createElement('div');
+                      fallbackDiv.className = 'h-12 w-48 bg-gray-200 flex items-center justify-center text-gray-500';
+                      fallbackDiv.textContent = siteSettings?.name || 'Practice Logo';
+                      e.target.parentNode.appendChild(fallbackDiv);
+                    }
                   }}
                 />
-              ) : (
+              ) : !hideLogo ? (
                 <div className="h-12 w-48 bg-gray-200 flex items-center justify-center text-gray-500">
-                  No logo available
+                  {siteSettings?.name || 'Practice Logo'}
                 </div>
-              )}
+              ) : null}
             </div>
             <p className="text-white">
               Stay connected to our practice via our social platforms.

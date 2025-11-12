@@ -8,6 +8,7 @@ import Image from 'next/image';
 import Navbar from './Navbar';
 
 const InfoCentreListPage = ({ category }) => {
+  const { practiceId } = useParams();
   const router = useRouter();
   const { siteSettings } = useSiteSettings();
   const pathname = usePathname();
@@ -174,7 +175,7 @@ const InfoCentreListPage = ({ category }) => {
             <div className="text-center">
               <div className="text-xl font-medium">
                 <Link 
-                  href="/info_centre"
+                  href={`/${practiceId}/info_centre`}
                   className="text-primary underline"
                 >
                   Info Centre
@@ -191,7 +192,7 @@ const InfoCentreListPage = ({ category }) => {
           {sectionItems.map((item) => (
             <Link 
               key={`item-${item.id}`}
-              href={`/info_centre/view/${item.id}`}
+              href={`${getBasePath()}/info_centre/view/${item.id}`}
               className="group flex flex-col h-full bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all duration-300"
             >
               <div className="p-4">

@@ -108,7 +108,7 @@ export default function InfoItemPage() {
           
           setContent({
             id: item.id,
-            name: item.name,
+            name: item.title,
             banner: bannerUrl,
             overview: overviewAttr?.data || '',
             hasOverview: !!overviewAttr,
@@ -297,8 +297,9 @@ export default function InfoItemPage() {
   const renderBreadcrumbs = () => {
     if (!content) return null;
     
-    const infoCentrePath = '/info_centre'; // Updated to use non-practice specific path
-    const categoryPath = categoryDetails ? `${infoCentrePath}/list/${categoryDetails.id}` : infoCentrePath;
+    const infoCentrePath = practiceId ? `/${practiceId}/info_centre` : '/info_centre';
+    // Include practiceId in the category path
+    const categoryPath = categoryDetails ? `${infoCentrePath}/list/${categoryDetails.id}${practiceId ? `/${practiceId}` : ''}` : infoCentrePath;
     
     return (
       <div className="bg-gray-100 py-5 pb-1 px-4">
@@ -330,7 +331,7 @@ export default function InfoItemPage() {
       
       {/* Banner section */}
       {content?.banner && (
-        <div 
+        <div
           className="w-full h-[600px] bg-cover bg-center text-center text-white relative"
           style={{ backgroundImage: content.banner ? `url(${content.banner})` : 'none' }}
         >
